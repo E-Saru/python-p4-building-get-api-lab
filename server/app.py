@@ -18,21 +18,30 @@ db.init_app(app)
 def index():
     return '<h1>Bakery GET API</h1>'
 
-@app.route('/bakeries')
-def bakeries():
-    return ''
+@app.route('/bakeries', methods=['GET'])
+def get_bakeries():
+    bakeries = [bakery.to_dict() for bakery in Bakery.query.all()]
+    return make_response(bakeries, 200)
 
-@app.route('/bakeries/<int:id>')
+@app.route('/bakeries/<int:id>', methods=['GET'])
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.filter_by(id=id).first()
+    bakery_serialized = bakery.to_dict()
+    return make_response(bakery_serialized, 200)
 
-@app.route('/baked_goods/by_price')
+@app.route('/baked_goods/by_price', methods=['GET'])
 def baked_goods_by_price():
-    return ''
+    baked_goods_by_price = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    baked_goods_by_price_serialized = [
+        bg.to_dict() for bg in baked_goods_by_price
+    ]
+    return make_response(baked_goods_by_price_serialized, 200)
 
-@app.route('/baked_goods/most_expensive')
+@app.route('/baked_goods/most_expensive', methods=['GET'])
 def most_expensive_baked_good():
-    return ''
+    most_expensive = BakedGood.query.order_by(BakedGood.price.desc()).limit(1).first()
+    most_expensive_serialized = most_expensive.to_dict()
+    return make_response(most_expensive_serialized, 200)
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
